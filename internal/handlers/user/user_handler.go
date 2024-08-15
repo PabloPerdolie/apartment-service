@@ -5,8 +5,10 @@ import (
 	openapi "apartment_search_service/internal/openapi/gen"
 	"apartment_search_service/internal/services"
 	"encoding/json"
+	"fmt"
 	"github.com/go-playground/validator/v10"
 	"github.com/google/uuid"
+	"log"
 	"net/http"
 )
 
@@ -21,25 +23,32 @@ func NewHandler(service services.AuthService) *Handler {
 func (h *Handler) DummyLogin(w http.ResponseWriter, r *http.Request) {
 	userType, err := openapi.NewUserTypeFromValue(r.URL.Query().Get("user_type"))
 	if err != nil {
+		log.Println(err)
 		//todo error
 		return
 	}
 
+	id := uuid.New().String()
+	email := fmt.Sprintf("dummy_email_%s@gmail.com", id)
+	password := "12345678"
 	user := models.User{
-		UserId:   uuid.New().String(),
-		Email:    "dummy_email@gmail.com",
-		Password: "123456",
+		UserId:   id,
+		Email:    email,
+		Password: password,
 		UserType: string(*userType),
 	}
 
 	_, err = h.service.CreateUser(&user)
 	if err != nil {
+		log.Println(err)
 		// todo error
+		//http.Error(w, "Unable to create user", http.StatusInternalServerError)
 		return
 	}
 
-	token, err := h.service.GenerateToken(user.UserId, user.Password)
+	token, err := h.service.GenerateToken(id, password)
 	if err != nil {
+		log.Println(err)
 		//todo error
 		return
 	}
@@ -59,6 +68,7 @@ func (h *Handler) Login(w http.ResponseWriter, r *http.Request) {
 	validate := validator.New()
 
 	if err := validate.Struct(req); err != nil {
+		log.Println(err)
 		// todo error
 		//errs := err.(validator.ValidationErrors)
 		//newErrorResponse(w, http.StatusBadRequest, errs.Error())
@@ -67,6 +77,7 @@ func (h *Handler) Login(w http.ResponseWriter, r *http.Request) {
 
 	token, err := h.service.GenerateToken(req.GetId(), req.GetPassword())
 	if err != nil {
+		log.Println(err)
 		//todo error
 		return
 	}
@@ -86,6 +97,7 @@ func (h *Handler) Register(w http.ResponseWriter, r *http.Request) {
 	validate := validator.New()
 
 	if err := validate.Struct(req); err != nil {
+		log.Println(err)
 		// todo error
 		//errs := err.(validator.ValidationErrors)
 		//newErrorResponse(w, http.StatusBadRequest, errs.Error())
@@ -101,6 +113,7 @@ func (h *Handler) Register(w http.ResponseWriter, r *http.Request) {
 
 	id, err := h.service.CreateUser(&user)
 	if err != nil {
+		log.Println(err)
 		// todo error
 		return
 	}

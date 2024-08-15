@@ -31,10 +31,6 @@ type tokenClaims struct {
 
 func (as *authService) CreateUser(user *models.User) (id string, err error) {
 	user.Password = HashPassword(user.Password)
-	_, err = as.repo.Get(user.Email, user.Password)
-	if err == nil {
-		return id, errors.New("email is not free")
-	}
 	err = as.repo.Insert(user)
 	if err != nil {
 		return id, err

@@ -4,7 +4,6 @@ import (
 	"apartment_search_service/internal/models"
 	"apartment_search_service/internal/repositories"
 	"database/sql"
-	"log"
 )
 
 type userRepository struct {
@@ -12,9 +11,6 @@ type userRepository struct {
 }
 
 func NewUserRepository(db *sql.DB) repositories.UserRepository {
-	if db == nil {
-		log.Fatal("database connection is nil")
-	}
 	return &userRepository{db: db}
 }
 
