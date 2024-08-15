@@ -1,8 +1,9 @@
-package services
+package auth
 
 import (
 	"apartment_search_service/internal/models"
 	"apartment_search_service/internal/repositories"
+	"apartment_search_service/internal/services"
 	"crypto/sha1"
 	"errors"
 	"fmt"
@@ -20,7 +21,7 @@ type authService struct {
 	repo repositories.UserRepository
 }
 
-func NewAuthService(repo repositories.UserRepository) AuthService {
+func NewAuthService(repo repositories.UserRepository) services.AuthService {
 	return &authService{repo: repo}
 }
 

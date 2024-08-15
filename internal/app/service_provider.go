@@ -6,6 +6,7 @@ import (
 	"apartment_search_service/internal/repositories"
 	userrepo "apartment_search_service/internal/repositories/user"
 	"apartment_search_service/internal/services"
+	"apartment_search_service/internal/services/auth"
 	"apartment_search_service/internal/utils"
 )
 
@@ -25,7 +26,7 @@ func (sp *serviceProvider) initServices(conf *config.Config) error {
 		return err
 	}
 	sp.userRepo = userrepo.NewUserRepository(db)
-	sp.authService = services.NewAuthService(sp.userRepo)
+	sp.authService = auth.NewAuthService(sp.userRepo)
 	sp.userHandler = user.NewHandler(sp.authService)
 
 	return nil
