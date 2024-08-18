@@ -35,6 +35,7 @@ func (h *Handler) Authorize(next http.Handler) http.Handler {
 			return
 		}
 		cont.Set(r, "role", user.UserType)
+		cont.Set(r, "userId", user.UserId)
 		next.ServeHTTP(w, r)
 	})
 }
@@ -42,6 +43,7 @@ func (h *Handler) Authorize(next http.Handler) http.Handler {
 func (h *Handler) ModeratorMiddleware(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		role, ok := cont.Get(r, "role").(string)
+
 		if !ok {
 			// todo error
 			http.Error(w, "Role not found", http.StatusForbidden)
