@@ -23,7 +23,7 @@ func (f *flatRepository) Insert(flat *models.Flat) error {
 	return err
 }
 
-func (f *flatRepository) UpdateStatus(flatId int, moderId, status string) (*models.Flat, error) {
+func (f *flatRepository) UpdateStatus(flatId int32, moderId, status string) (*models.Flat, error) {
 	flat := &models.Flat{}
 	query := `
 		UPDATE flats SET status = $1, moderator_id = $2
@@ -39,13 +39,13 @@ func (f *flatRepository) UpdateStatus(flatId int, moderId, status string) (*mode
 	return flat, nil
 }
 
-func (f *flatRepository) GetFlatsByHouseId(houseId int, isModer bool) ([]*models.Flat, error) {
+func (f *flatRepository) GetFlatsByHouseId(houseId int32, isModer bool) ([]*models.Flat, error) {
 	query := `SELECT id, house_id, price, rooms, status, moderator_id FROM flats WHERE house_id=$1`
 	if !isModer {
 		query = fmt.Sprintf(`%s AND status = '%s'`, query, openapi.APPROVED)
 	}
 
-	rows, err := f.db.Query(query)
+	rows, err := f.db.Query(query, houseId)
 	if err != nil {
 		return nil, err
 	}

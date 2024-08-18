@@ -1,10 +1,10 @@
 package models
 
 type Flat struct {
-	Id          int
-	HouseId     int
-	Price       int
-	Rooms       int8
+	Id          int32
+	HouseId     int32
+	Price       int32
+	Rooms       int32
 	Status      string
 	ModeratorId string
 }

@@ -1,12 +1,15 @@
 package models
 
-import "time"
+import (
+	"database/sql"
+	"time"
+)
 
 type House struct {
-	Id        int
+	Id        int32
 	Address   string
-	Year      int16
+	Year      int32
 	Developer string
 	CreatedAt time.Time
-	UpdatedAt time.Time
+	UpdatedAt sql.NullTime
 }

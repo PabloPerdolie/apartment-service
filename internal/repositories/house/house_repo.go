@@ -22,7 +22,7 @@ func (hr *houseRepository) Insert(house *models.House) error {
 
 }
 
-func (hr *houseRepository) GetById(id int) (*models.House, error) {
+func (hr *houseRepository) GetById(id int32) (*models.House, error) {
 	house := &models.House{}
 	query := `SELECT id, address, year, developer, created_at, updated_at FROM houses WHERE id = $1`
 	if err := hr.db.QueryRow(query, id).
