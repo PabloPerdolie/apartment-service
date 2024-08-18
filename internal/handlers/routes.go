@@ -4,6 +4,8 @@ import (
 	"apartment_search_service/internal/handlers/flat"
 	"apartment_search_service/internal/handlers/house"
 	"apartment_search_service/internal/handlers/user"
+	"github.com/google/uuid"
+	cont "github.com/gorilla/context"
 	"github.com/gorilla/mux"
 	"net/http"
 )
@@ -14,6 +16,7 @@ func SetupRoutes(user *user.Handler, house *house.Handler, flat *flat.Handler) *
 	r.Use(func(next http.Handler) http.Handler {
 		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 			w.Header().Set("Content-Type", "application/json")
+			cont.Set(r, "requestId", uuid.New().String())
 			next.ServeHTTP(w, r)
 		})
 	})

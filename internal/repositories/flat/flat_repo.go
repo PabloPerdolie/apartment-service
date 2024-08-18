@@ -40,7 +40,7 @@ func (f *flatRepository) UpdateStatus(flatId int32, moderId, status string) (*mo
 }
 
 func (f *flatRepository) GetFlatsByHouseId(houseId int32, isModer bool) ([]*models.Flat, error) {
-	query := `SELECT id, house_id, price, rooms, status, moderator_id FROM flats WHERE house_id=$1`
+	query := `SELECT id, house_id, price, rooms, status FROM flats WHERE house_id=$1`
 	if !isModer {
 		query = fmt.Sprintf(`%s AND status = '%s'`, query, openapi.APPROVED)
 	}
@@ -54,7 +54,7 @@ func (f *flatRepository) GetFlatsByHouseId(houseId int32, isModer bool) ([]*mode
 	flats := make([]*models.Flat, 0, 32)
 	for rows.Next() {
 		flat := &models.Flat{}
-		err := rows.Scan(&flat.Id, &flat.HouseId, &flat.Price, &flat.Rooms, &flat.Status, &flat.ModeratorId)
+		err := rows.Scan(&flat.Id, &flat.HouseId, &flat.Price, &flat.Rooms, &flat.Status)
 		if err != nil {
 			return nil, err
 		}
