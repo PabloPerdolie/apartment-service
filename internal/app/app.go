@@ -3,29 +3,33 @@ package app
 import (
 	"apartment_search_service/internal/config"
 	"apartment_search_service/internal/handlers"
+	"apartment_search_service/internal/logger"
 	"context"
 	"github.com/gorilla/mux"
-	"log"
+	"github.com/sirupsen/logrus"
 	"net/http"
 )
 
 type App struct {
 	serviceProvider *serviceProvider
 	config          *config.Config
+	logger          *logrus.Logger
 	router          *mux.Router
 }
 
-func NewApp(ctx context.Context) (*App, error) {
+func NewApp(ctx context.Context) *App {
 	a := &App{}
 	err := a.initDeps(ctx)
 	if err != nil {
-		return nil, err
+		a.logger.Fatal("failed to init app: %s", err.Error())
+		return nil
 	}
-	return a, nil
+	return a
 }
 
 func (a *App) initDeps(ctx context.Context) error {
 	inits := []func(context.Context) error{
+		a.initLogger,
 		a.initConfig,
 		a.initServiceProvider,
 		a.initServer,
@@ -41,11 +45,16 @@ func (a *App) initDeps(ctx context.Context) error {
 	return nil
 }
 
-func (a *App) Run() error {
-	return a.runServer()
+func (a *App) Run() {
+	a.runServer()
 }
 
-func (a *App) initServer(ctx context.Context) error {
+func (a *App) initLogger(_ context.Context) error {
+	a.logger = logger.NewLogger()
+	return nil
+}
+
+func (a *App) initServer(_ context.Context) error {
 	a.router = handlers.SetupRoutes(
 		a.serviceProvider.userHandler,
 		a.serviceProvider.houseHandler,
@@ -60,12 +69,10 @@ func (a *App) initConfig(_ context.Context) error {
 
 func (a *App) initServiceProvider(_ context.Context) error {
 	a.serviceProvider = newServiceProvider()
-	return a.serviceProvider.initServices(a.config)
+	return a.serviceProvider.initServices(a.config, a.logger)
 }
 
-func (a *App) runServer() error {
-	log.Printf("connect to http://localhost:%s/", a.config.Port)
-	log.Fatal(http.ListenAndServe(":"+a.config.Port, a.router))
-
-	return nil
+func (a *App) runServer() {
+	a.logger.Printf("connect to http://localhost:%s/", a.config.Port)
+	a.logger.Fatal(http.ListenAndServe(":"+a.config.Port, a.router))
 }

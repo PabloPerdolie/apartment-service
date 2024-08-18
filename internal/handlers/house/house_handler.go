@@ -1,14 +1,18 @@
 package house
 
 import (
+	"apartment_search_service/internal/errors"
 	"apartment_search_service/internal/models"
 	openapi "apartment_search_service/internal/openapi/gen"
 	"apartment_search_service/internal/services"
+	"apartment_search_service/internal/utils"
+	"database/sql"
 	"encoding/json"
+	errors1 "errors"
 	"github.com/go-playground/validator/v10"
 	"github.com/gorilla/context"
 	"github.com/gorilla/mux"
-	"log"
+	"github.com/sirupsen/logrus"
 	"net/http"
 	"strconv"
 	"time"
@@ -16,25 +20,28 @@ import (
 
 type Handler struct {
 	service services.HouseService
+	logger  *logrus.Logger
 }
 
-func NewHandler(service services.HouseService) *Handler {
-	return &Handler{service: service}
+func NewHandler(service services.HouseService, logger *logrus.Logger) *Handler {
+	return &Handler{
+		service: service,
+		logger:  logger,
+	}
 }
 
 func (h *Handler) CreateHouse(w http.ResponseWriter, r *http.Request) {
 	var req openapi.HouseCreatePostRequest
 	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
-		log.Println(err)
-		// todo error
+		utils.RespondWithError400(w, r, h.logger, "Invalid request body", errors.CodeInvalidInput)
 		return
+
 	}
 
 	validate := validator.New()
 
 	if err := validate.Struct(req); err != nil {
-		log.Println(err)
-		// todo error
+		utils.RespondWithError400(w, r, h.logger, "Invalid input data", errors.CodeInvalidInput)
 		return
 	}
 
@@ -46,10 +53,12 @@ func (h *Handler) CreateHouse(w http.ResponseWriter, r *http.Request) {
 	}
 
 	if err := h.service.CreateHouse(&house); err != nil {
-		log.Println(err)
-		// todo err500
+		utils.RespondWithError500(w, r, h.logger, http.StatusInternalServerError, "House already exists", errors.CodeHouseAlreadyExists)
 		return
 	}
+	h.logger.WithFields(logrus.Fields{
+		"house_id": house.Id,
+	}).Info("House created successfully")
 
 	resp := openapi.House{
 		Id:        house.Id,
@@ -66,8 +75,7 @@ func (h *Handler) CreateHouse(w http.ResponseWriter, r *http.Request) {
 func (h *Handler) GetFlatsInDeHouse(w http.ResponseWriter, r *http.Request) {
 	id, err := strconv.Atoi(mux.Vars(r)["id"])
 	if err != nil || id < 1 {
-		log.Println(err)
-		// todo error400
+		utils.RespondWithError500(w, r, h.logger, http.StatusNotImplemented, "Invalid id", errors.CodeBadRequest)
 		return
 	}
 
@@ -79,9 +87,18 @@ func (h *Handler) GetFlatsInDeHouse(w http.ResponseWriter, r *http.Request) {
 
 	flats, err := h.service.GetFlatsByHouseId(int32(id), isModer)
 	if err != nil {
-		// todo error500
+		if errors1.Is(err, sql.ErrNoRows) {
+			// todo REPOS GETBYID error
+			utils.RespondWithError500(w, r, h.logger, http.StatusInternalServerError, "Flats in de house not found", errors.CodeHouseNotFound)
+		} else {
+			utils.RespondWithError500(w, r, h.logger, http.StatusInternalServerError, err.Error(), errors.CodeServiceError)
+		}
 		return
 	}
+
+	h.logger.WithFields(logrus.Fields{
+		"house_id": id,
+	}).Info("Flats received successfully")
 
 	resp := openapi.HouseIdGet200Response{
 		Flats: make([]openapi.Flat, len(flats)),

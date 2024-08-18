@@ -1,37 +1,44 @@
 package flat
 
 import (
+	"apartment_search_service/internal/errors"
 	"apartment_search_service/internal/models"
 	openapi "apartment_search_service/internal/openapi/gen"
 	"apartment_search_service/internal/services"
+	"apartment_search_service/internal/utils"
+	"database/sql"
 	"encoding/json"
 	"github.com/go-playground/validator/v10"
 	"github.com/gorilla/context"
-	"log"
+	"github.com/sirupsen/logrus"
 	"net/http"
+
+	errors1 "errors"
 )
 
 type Handler struct {
 	service services.FlatService
+	logger  *logrus.Logger
 }
 
-func NewHandler(service services.FlatService) *Handler {
-	return &Handler{service: service}
+func NewHandler(service services.FlatService, logger *logrus.Logger) *Handler {
+	return &Handler{
+		service: service,
+		logger:  logger,
+	}
 }
 
 func (h *Handler) CreateFlat(w http.ResponseWriter, r *http.Request) {
 	var req openapi.FlatCreatePostRequest
 	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
-		log.Println(err)
-		// todo error
+		utils.RespondWithError400(w, r, h.logger, "Invalid request body", errors.CodeInvalidInput)
 		return
 	}
 
 	validate := validator.New()
 
 	if err := validate.Struct(req); err != nil {
-		log.Println(err)
-		// todo error
+		utils.RespondWithError400(w, r, h.logger, "Invalid input data", errors.CodeInvalidInput)
 		return
 	}
 
@@ -43,10 +50,13 @@ func (h *Handler) CreateFlat(w http.ResponseWriter, r *http.Request) {
 	}
 
 	if err := h.service.CreateFlat(&flat); err != nil {
-		log.Println(err)
-		// todo err500
+		utils.RespondWithError500(w, r, h.logger, http.StatusInternalServerError, err.Error(), errors.CodeServiceError)
 		return
 	}
+
+	h.logger.WithFields(logrus.Fields{
+		"flat_id": flat.Id,
+	}).Info("Flat created successfully")
 
 	resp := openapi.Flat{
 		Id:      flat.Id,
@@ -62,16 +72,14 @@ func (h *Handler) CreateFlat(w http.ResponseWriter, r *http.Request) {
 func (h *Handler) UpdateFlat(w http.ResponseWriter, r *http.Request) {
 	var req openapi.FlatUpdatePostRequest
 	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
-		log.Println(err)
-		//todo error400
+		utils.RespondWithError400(w, r, h.logger, "Invalid request body", errors.CodeInvalidInput)
 		return
 	}
 
 	validate := validator.New()
 
 	if err := validate.Struct(req); err != nil {
-		log.Println(err)
-		// todo error400
+		utils.RespondWithError400(w, r, h.logger, "Invalid input data", errors.CodeInvalidInput)
 		return
 	}
 
@@ -79,10 +87,19 @@ func (h *Handler) UpdateFlat(w http.ResponseWriter, r *http.Request) {
 
 	flat, err := h.service.UpdateStatus(req.GetId(), id, string(req.GetStatus()))
 	if err != nil {
-		log.Println(err)
-		// todo error500
+		if errors1.Is(err, sql.ErrNoRows) {
+			// todo REPOS GETBYID error
+			utils.RespondWithError500(w, r, h.logger, http.StatusInternalServerError, "Flat not found", errors.CodeFlatNotFound)
+		} else {
+			utils.RespondWithError500(w, r, h.logger, http.StatusInternalServerError, err.Error(), errors.CodeFlatStatusError)
+		}
 		return
 	}
+
+	h.logger.WithFields(logrus.Fields{
+		"flat_id": flat.Id,
+		"status":  flat.Status,
+	}).Info("Flat updated successfully")
 
 	resp := openapi.Flat{
 		Id:      flat.Id,

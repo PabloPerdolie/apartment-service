@@ -6,13 +6,14 @@ import (
 	"github.com/golang-migrate/migrate/v4"
 	"github.com/golang-migrate/migrate/v4/database/postgres"
 	_ "github.com/golang-migrate/migrate/v4/source/file"
+	"github.com/sirupsen/logrus"
 	"log"
 	"os"
 	"path/filepath"
 	"strconv"
 )
 
-func InitDB(user, password, dbname, host, port string) (*sql.DB, error) {
+func InitDB(user, password, dbname, host, port string, logger *logrus.Logger) (*sql.DB, error) {
 	p, err := strconv.Atoi(port)
 	dsn := fmt.Sprintf("postgres://%s:%s@%s:%d/%s?sslmode=disable", user, password, host, p, dbname)
 	db, err := sql.Open("postgres", dsn)
@@ -24,13 +25,13 @@ func InitDB(user, password, dbname, host, port string) (*sql.DB, error) {
 		return nil, err
 	}
 
-	log.Println("сonnected to the database")
-	runMigrations("", dbname, db)
+	logger.Info("Successfully connected to database")
+	runMigrations(dbname, db, logger)
 
 	return db, nil
 }
 
-func runMigrations(sourceUrl, dbname string, db *sql.DB) {
+func runMigrations(dbname string, db *sql.DB, logger *logrus.Logger) {
 	driver, err := postgres.WithInstance(db, &postgres.Config{})
 	if err != nil {
 		log.Fatalf("could not create postgres driver: %v", err)
@@ -50,7 +51,7 @@ func runMigrations(sourceUrl, dbname string, db *sql.DB) {
 	}
 
 	if err := m.Up(); err != nil && err != migrate.ErrNoChange {
-		log.Fatalf("could not run migrations: %v", err)
+		logger.WithError(err).Fatal("could not run migrations")
 	}
-	log.Println("Migrations ran successfully")
+	logger.Info("Successfully ran migrations")
 }
