@@ -46,7 +46,10 @@ func (a *App) Run() error {
 }
 
 func (a *App) initServer(ctx context.Context) error {
-	a.router = handlers.SetupRoutes(a.serviceProvider.userHandler)
+	a.router = handlers.SetupRoutes(
+		a.serviceProvider.userHandler,
+		a.serviceProvider.houseHandler,
+		a.serviceProvider.flatHandler)
 	return nil
 }
 
