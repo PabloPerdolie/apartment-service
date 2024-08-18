@@ -10,11 +10,11 @@ type UserRepository interface {
 
 type HouseRepository interface {
 	Insert(house *models.House) error
-	GetById(id int) (*models.House, error)
+	GetById(id int32) (*models.House, error)
 }
 
 type FlatRepository interface {
 	Insert(flat *models.Flat) error
-	UpdateStatus(flatId int, moderId, status string) (*models.Flat, error)
-	GetFlatsByHouseId(houseId int, isModer bool) ([]*models.Flat, error)
+	UpdateStatus(flatId int32, moderId, status string) (*models.Flat, error)
+	GetFlatsByHouseId(houseId int32, isModer bool) ([]*models.Flat, error)
 }
