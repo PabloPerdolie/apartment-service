@@ -22,8 +22,8 @@ var _ MappedNullable = &FlatUpdatePostRequest{}
 // FlatUpdatePostRequest struct for FlatUpdatePostRequest
 type FlatUpdatePostRequest struct {
 	// Идентификатор квартиры
-	Id     int32   `json:"id"`
-	Status *Status `json:"status,omitempty"`
+	Id     int32   `json:"id" validate:"required,numeric,min=1"`
+	Status *Status `json:"status" validate:"oneof=created approved declined 'on moderation'"`
 }
 
 type _FlatUpdatePostRequest FlatUpdatePostRequest

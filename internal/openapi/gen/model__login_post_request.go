@@ -20,7 +20,7 @@ var _ MappedNullable = &LoginPostRequest{}
 // LoginPostRequest struct for LoginPostRequest
 type LoginPostRequest struct {
 	// Идентификатор пользователя
-	Id *string `json:"id" validate:"required,len=36"`
+	Id *string `json:"id" validate:"required,len=36,uuid"`
 	// Пароль пользователя
 	Password *string `json:"password" validate:"required,min=8"`
 }

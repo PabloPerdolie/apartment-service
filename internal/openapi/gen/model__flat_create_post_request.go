@@ -22,11 +22,11 @@ var _ MappedNullable = &FlatCreatePostRequest{}
 // FlatCreatePostRequest struct for FlatCreatePostRequest
 type FlatCreatePostRequest struct {
 	// Идентификатор дома
-	HouseId int32 `json:"house_id"`
+	HouseId int32 `json:"house_id" validate:"required,numeric,min=1"`
 	// Цена квартиры в у.е.
-	Price int32 `json:"price"`
+	Price int32 `json:"price" validate:"required,numeric,min=0"`
 	// Количество комнат в квартире
-	Rooms *int32 `json:"rooms,omitempty"`
+	Rooms *int32 `json:"rooms" validate:"required,numeric,min=1"`
 }
 
 type _FlatCreatePostRequest FlatCreatePostRequest
