@@ -8,7 +8,7 @@ import (
 
 type SubscriptionRepo struct {
 	data map[int32][]string
-	mu   *sync.RWMutex
+	mu   sync.RWMutex
 }
 
 func NewSubscriptionRepo() repositories.SubscriptionRepository {

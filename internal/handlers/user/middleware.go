@@ -37,7 +37,7 @@ func (h *Handler) Authorize(next http.Handler) http.Handler {
 		//cont.Set(r, "role", user.UserType)
 		//cont.Set(r, "userId", user.UserId)
 		ctx := context.WithValue(r.Context(), "userId", user.UserId)
-		ctx = context.WithValue(ctx, "role", string(openapi.CLIENT))
+		ctx = context.WithValue(ctx, "role", user.UserType)
 		r = r.WithContext(ctx)
 		next.ServeHTTP(w, r)
 	})
