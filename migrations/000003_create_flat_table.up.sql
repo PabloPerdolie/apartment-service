@@ -6,3 +6,5 @@ CREATE TABLE IF NOT EXISTS flats (
     status VARCHAR(13),
     moderator_id VARCHAR(36) REFERENCES users(id)
 );
+
+CREATE INDEX idx_flats_house_id ON flats(house_id);
