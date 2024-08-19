@@ -1,4 +1,4 @@
-package user
+package postgres
 
 import (
 	"apartment_search_service/internal/models"

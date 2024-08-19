@@ -1,9 +1,8 @@
-package house
+package services
 
 import (
 	"apartment_search_service/internal/models"
 	"apartment_search_service/internal/repositories"
-	"apartment_search_service/internal/services"
 )
 
 type houseService struct {
@@ -11,7 +10,7 @@ type houseService struct {
 	houseRepo repositories.HouseRepository
 }
 
-func NewHouseService(h repositories.HouseRepository, f repositories.FlatRepository) services.HouseService {
+func NewHouseService(h repositories.HouseRepository, f repositories.FlatRepository) HouseService {
 	return &houseService{
 		flatRepo:  f,
 		houseRepo: h,

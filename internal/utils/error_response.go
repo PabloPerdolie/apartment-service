@@ -9,7 +9,8 @@ import (
 )
 
 func RespondWithError500(w http.ResponseWriter, r *http.Request, logger *logrus.Logger, statusCode int, message string, code int32) {
-	requestId := context.Get(r, "requestId").(string)
+	//requestId := context.Get(r, "requestId").(string)
+	requestId := r.Context().Value("requestId").(string)
 
 	response := openapi.DummyLoginGet500Response{
 		Message:   message,
@@ -19,6 +20,7 @@ func RespondWithError500(w http.ResponseWriter, r *http.Request, logger *logrus.
 
 	logger.Errorf("RequestId: %s, Error: %s, Code: %d", requestId, message, code)
 
+	w.Header().Set("Retry-After", "5")
 	w.WriteHeader(statusCode)
 	json.NewEncoder(w).Encode(response)
 }

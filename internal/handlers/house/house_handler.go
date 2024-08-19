@@ -10,7 +10,6 @@ import (
 	"encoding/json"
 	errors1 "errors"
 	"github.com/go-playground/validator/v10"
-	"github.com/gorilla/context"
 	"github.com/gorilla/mux"
 	"github.com/sirupsen/logrus"
 	"net/http"
@@ -79,7 +78,8 @@ func (h *Handler) GetFlatsInDeHouse(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	role := context.Get(r, "role").(string)
+	// role := context.Get(r, "role").(string)
+	role := r.Context().Value("role").(string)
 	var isModer bool
 	if role != string(openapi.CLIENT) {
 		isModer = true
@@ -88,7 +88,6 @@ func (h *Handler) GetFlatsInDeHouse(w http.ResponseWriter, r *http.Request) {
 	flats, err := h.service.GetFlatsByHouseId(int32(id), isModer)
 	if err != nil {
 		if errors1.Is(err, sql.ErrNoRows) {
-			// todo REPOS GETBYID error
 			utils.RespondWithError500(w, r, h.logger, http.StatusInternalServerError, "Flats in de house not found", errors.CodeHouseNotFound)
 		} else {
 			utils.RespondWithError500(w, r, h.logger, http.StatusInternalServerError, err.Error(), errors.CodeServiceError)

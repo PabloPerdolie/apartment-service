@@ -1,4 +1,4 @@
-package flat
+package postgres
 
 import (
 	"apartment_search_service/internal/models"

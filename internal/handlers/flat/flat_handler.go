@@ -9,7 +9,6 @@ import (
 	"database/sql"
 	"encoding/json"
 	"github.com/go-playground/validator/v10"
-	"github.com/gorilla/context"
 	"github.com/sirupsen/logrus"
 	"net/http"
 
@@ -83,7 +82,7 @@ func (h *Handler) UpdateFlat(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	id := context.Get(r, "userId").(string)
+	id := r.Context().Value("userId").(string)
 
 	flat, err := h.service.UpdateStatus(req.GetId(), id, string(req.GetStatus()))
 	if err != nil {

@@ -6,13 +6,8 @@ import (
 	"apartment_search_service/internal/handlers/house"
 	"apartment_search_service/internal/handlers/user"
 	"apartment_search_service/internal/repositories"
-	flat2 "apartment_search_service/internal/repositories/flat"
-	house2 "apartment_search_service/internal/repositories/house"
-	userrepo "apartment_search_service/internal/repositories/user"
+	"apartment_search_service/internal/repositories/postgres"
 	"apartment_search_service/internal/services"
-	"apartment_search_service/internal/services/auth"
-	flat3 "apartment_search_service/internal/services/flat"
-	house3 "apartment_search_service/internal/services/house"
 	"apartment_search_service/internal/utils"
 	"github.com/sirupsen/logrus"
 )
@@ -38,13 +33,13 @@ func (sp *serviceProvider) initServices(conf *config.Config, logger *logrus.Logg
 	if err != nil {
 		return err
 	}
-	sp.userRepo = userrepo.NewUserRepository(db)
-	sp.flatRepo = flat2.NewFlatRepository(db)
-	sp.houseRepo = house2.NewHouseRepository(db)
+	sp.userRepo = postgres.NewUserRepository(db)
+	sp.flatRepo = postgres.NewFlatRepository(db)
+	sp.houseRepo = postgres.NewHouseRepository(db)
 
-	sp.authService = auth.NewAuthService(sp.userRepo)
-	sp.houseService = house3.NewHouseService(sp.houseRepo, sp.flatRepo)
-	sp.flatService = flat3.NewFlatService(sp.flatRepo, sp.houseRepo)
+	sp.authService = services.NewAuthService(sp.userRepo)
+	sp.houseService = services.NewHouseService(sp.houseRepo, sp.flatRepo)
+	sp.flatService = services.NewFlatService(sp.flatRepo, sp.houseRepo)
 
 	sp.userHandler = user.NewHandler(sp.authService, logger)
 	sp.houseHandler = house.NewHandler(sp.houseService, logger)
