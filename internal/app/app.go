@@ -21,7 +21,7 @@ func NewApp(ctx context.Context) *App {
 	a := &App{}
 	err := a.initDeps(ctx)
 	if err != nil {
-		a.logger.Fatal("failed to init app: %s", err.Error())
+		a.logger.Fatalf("failed to init app: %s", err.Error())
 		return nil
 	}
 	return a
