@@ -16,14 +16,16 @@ import (
 )
 
 type Handler struct {
-	service services.FlatService
-	logger  *logrus.Logger
+	service  services.FlatService
+	logger   *logrus.Logger
+	notifier services.SubscriptionService
 }
 
 func NewHandler(service services.FlatService, logger *logrus.Logger) *Handler {
 	return &Handler{
 		service: service,
 		logger:  logger,
+		//todo
 	}
 }
 
@@ -52,6 +54,8 @@ func (h *Handler) CreateFlat(w http.ResponseWriter, r *http.Request) {
 		utils.RespondWithError500(w, r, h.logger, http.StatusInternalServerError, err.Error(), errors.CodeServiceError)
 		return
 	}
+
+	h.notifier.NotifySubscribers(flat.HouseId, string(flat.Id))
 
 	h.logger.WithFields(logrus.Fields{
 		"flat_id": flat.Id,

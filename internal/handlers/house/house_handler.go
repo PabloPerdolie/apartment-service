@@ -18,8 +18,9 @@ import (
 )
 
 type Handler struct {
-	service services.HouseService
-	logger  *logrus.Logger
+	service     services.HouseService
+	logger      *logrus.Logger
+	subscribers services.SubscriptionService
 }
 
 func NewHandler(service services.HouseService, logger *logrus.Logger) *Handler {
@@ -115,4 +116,37 @@ func (h *Handler) GetFlatsInDeHouse(w http.ResponseWriter, r *http.Request) {
 
 	w.WriteHeader(http.StatusOK)
 	json.NewEncoder(w).Encode(resp)
+}
+
+func (h *Handler) SubscribeToNewFlatsInDeHouse(w http.ResponseWriter, r *http.Request) {
+	id, err := strconv.Atoi(mux.Vars(r)["id"])
+	if err != nil || id < 1 {
+		utils.RespondWithError500(w, r, h.logger, http.StatusNotImplemented, "Invalid id", errors.CodeBadRequest)
+		return
+	}
+
+	var req openapi.HouseIdSubscribePostRequest
+	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
+		utils.RespondWithError400(w, r, h.logger, "Invalid request body", errors.CodeInvalidInput)
+		return
+	}
+
+	validate := validator.New()
+
+	if err := validate.Struct(req); err != nil {
+		utils.RespondWithError400(w, r, h.logger, "Invalid input data", errors.CodeInvalidCredentials)
+		return
+	}
+
+	err = h.subscribers.AddSubscriber(int32(id), req.GetEmail())
+	if err != nil {
+		if errors1.Is(err, sql.ErrNoRows) {
+			utils.RespondWithError500(w, r, h.logger, http.StatusInternalServerError, "House not found", errors.CodeHouseNotFound)
+		} else {
+			utils.RespondWithError500(w, r, h.logger, http.StatusInternalServerError, err.Error(), errors.CodeServiceError)
+		}
+	}
+
+	w.WriteHeader(http.StatusOK)
+	json.NewEncoder(w).Encode("Successfully subscribed")
 }

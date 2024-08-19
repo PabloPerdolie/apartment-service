@@ -12,10 +12,14 @@ type AuthService interface {
 type HouseService interface {
 	CreateHouse(house *models.House) error
 	GetFlatsByHouseId(houseId int32, isModer bool) ([]*models.Flat, error)
-	// SubscribeHouse(id string)
 }
 
 type FlatService interface {
 	CreateFlat(flat *models.Flat) error
 	UpdateStatus(flatId int32, moderId, status string) (*models.Flat, error)
+}
+
+type SubscriptionService interface {
+	AddSubscriber(houseId int32, email string) error
+	NotifySubscribers(houseId int32, flatInfo string)
 }

@@ -30,7 +30,7 @@ func SetupRoutes(user *user.Handler, house *house.Handler, flat *flat.Handler) *
 	houser := r.PathPrefix("/house").Subrouter()
 	houser.Use(user.Authorize)
 	houser.HandleFunc("/{id}", house.GetFlatsInDeHouse).Methods("GET", "OPTIONS")
-	//houser.HandleFunc("/{id}/subscribe", user.Register).Methods("POST", "OPTIONS")
+	//houser.HandleFunc("/{id}/subscribe", house.SubscribeToNewFlatsInDeHouse).Methods("POST", "OPTIONS")
 	houser.Handle("/create",
 		user.ModeratorMiddleware(http.HandlerFunc(house.CreateHouse))).Methods("POST", "OPTIONS") // admin
 

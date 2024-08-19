@@ -18,3 +18,8 @@ type FlatRepository interface {
 	UpdateStatus(flatId int32, moderId, status string) (*models.Flat, error)
 	GetFlatsByHouseId(houseId int32, isModer bool) ([]*models.Flat, error)
 }
+
+type SubscriptionRepository interface {
+	AddSubscriber(houseId int32, email string) error
+	GetSubscribers(houseId int32) ([]string, error)
+}

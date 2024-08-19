@@ -22,7 +22,7 @@ var _ MappedNullable = &HouseIdSubscribePostRequest{}
 // HouseIdSubscribePostRequest struct for HouseIdSubscribePostRequest
 type HouseIdSubscribePostRequest struct {
 	// Email пользователя
-	Email string `json:"email"`
+	Email string `json:"email" validate:"required,email"`
 }
 
 type _HouseIdSubscribePostRequest HouseIdSubscribePostRequest
