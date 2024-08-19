@@ -23,10 +23,11 @@ type Handler struct {
 	subscribers services.SubscriptionService
 }
 
-func NewHandler(service services.HouseService, logger *logrus.Logger) *Handler {
+func NewHandler(service services.HouseService, subs services.SubscriptionService, logger *logrus.Logger) *Handler {
 	return &Handler{
-		service: service,
-		logger:  logger,
+		service:     service,
+		subscribers: subs,
+		logger:      logger,
 	}
 }
 

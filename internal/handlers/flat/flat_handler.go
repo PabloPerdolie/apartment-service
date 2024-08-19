@@ -21,11 +21,11 @@ type Handler struct {
 	notifier services.SubscriptionService
 }
 
-func NewHandler(service services.FlatService, logger *logrus.Logger) *Handler {
+func NewHandler(service services.FlatService, notifier services.SubscriptionService, logger *logrus.Logger) *Handler {
 	return &Handler{
-		service: service,
-		logger:  logger,
-		//todo
+		service:  service,
+		logger:   logger,
+		notifier: notifier,
 	}
 }
 
