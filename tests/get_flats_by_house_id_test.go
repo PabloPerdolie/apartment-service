@@ -73,3 +73,24 @@ func TestGetFlatsByHouseIdQueryError(t *testing.T) {
 	assert.Nil(t, flats)
 	assert.NoError(t, mock.ExpectationsWereMet())
 }
+
+func TestGetFlatsByHouseIdScanError(t *testing.T) {
+	db, mock, err := sqlmock.New()
+	assert.NoError(t, err)
+	defer db.Close()
+
+	flatRepo := postgres.NewFlatRepository(db)
+	houseId := int32(1)
+
+	rows := sqlmock.NewRows([]string{"id", "house_id", "price", "rooms", "status"}).
+		AddRow("fgdfg", houseId, 100000, 3, "approved")
+
+	mock.ExpectQuery(`SELECT id, house_id, price, rooms, status FROM flats WHERE house_id=\$1? AND status = 'approved'`).
+		WithArgs(houseId).
+		WillReturnRows(rows)
+
+	flats, err := flatRepo.GetFlatsByHouseId(houseId, false)
+	assert.Error(t, err)
+	assert.Nil(t, flats)
+	assert.NoError(t, mock.ExpectationsWereMet())
+}
