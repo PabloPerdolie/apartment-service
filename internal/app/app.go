@@ -17,7 +17,7 @@ type App struct {
 	router          *mux.Router
 }
 
-func .NewApp(ctx context.Context) *App {
+func NewApp(ctx context.Context) *App {
 	a := &App{}
 	err := a.initDeps(ctx)
 	if err != nil {
