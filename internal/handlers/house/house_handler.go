@@ -146,6 +146,7 @@ func (h *Handler) SubscribeToNewFlatsInDeHouse(w http.ResponseWriter, r *http.Re
 		} else {
 			utils.RespondWithError500(w, r, h.logger, http.StatusInternalServerError, err.Error(), errors.CodeServiceError)
 		}
+		return
 	}
 
 	w.WriteHeader(http.StatusOK)

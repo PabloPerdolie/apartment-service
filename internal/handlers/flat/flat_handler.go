@@ -91,7 +91,6 @@ func (h *Handler) UpdateFlat(w http.ResponseWriter, r *http.Request) {
 	flat, err := h.service.UpdateStatus(req.GetId(), id, string(req.GetStatus()))
 	if err != nil {
 		if errors1.Is(err, sql.ErrNoRows) {
-			// todo REPOS GETBYID error
 			utils.RespondWithError500(w, r, h.logger, http.StatusInternalServerError, "Flat not found", errors.CodeFlatNotFound)
 		} else {
 			utils.RespondWithError500(w, r, h.logger, http.StatusInternalServerError, err.Error(), errors.CodeFlatStatusError)
