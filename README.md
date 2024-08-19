@@ -1,2 +1,2 @@
 ![Build Status](https://github.com/PabloPerdolie/apartment-service/actions/workflows/ci.yml/badge.svg)
-[![codecov](https://codecov.io/gh/PabloPerdolie/apartment-service/branch/main/graph/badge.svg)](https://codecov.io/gh/PabloPerdolie/apartment-service)
+[![codecov](https://codecov.io/gh/PabloPerdolie/apartment-service/graph/badge.svg?token=9FWV0I5PTC)](https://codecov.io/gh/PabloPerdolie/apartment-service)
