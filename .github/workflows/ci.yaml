@@ -25,10 +25,10 @@ jobs:
         run: go mod download
 
       - name: Run tests
-        run: go test ./tests -v
+        run: go test ./... -v
 
       - name: Generate coverage report
-        run: go test ./tests -coverprofile=coverage.out
+        run: go test ./... -coverprofile=coverage.out
 
       - name: Upload coverage to Codecov
         uses: codecov/codecov-action@v3
