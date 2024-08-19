@@ -55,7 +55,7 @@ func (h *Handler) CreateFlat(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	h.notifier.NotifySubscribers(flat.HouseId, string(flat.Id))
+	h.notifier.NotifySubscribers(flat.HouseId, flat.Id)
 
 	h.logger.WithFields(logrus.Fields{
 		"flat_id": flat.Id,

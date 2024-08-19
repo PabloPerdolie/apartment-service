@@ -197,3 +197,52 @@ func (mr *MockFlatServiceMockRecorder) UpdateStatus(flatId, moderId, status inte
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "UpdateStatus", reflect.TypeOf((*MockFlatService)(nil).UpdateStatus), flatId, moderId, status)
 }
+
+// MockSubscriptionService is a mock of SubscriptionService interface.
+type MockSubscriptionService struct {
+	ctrl     *gomock.Controller
+	recorder *MockSubscriptionServiceMockRecorder
+}
+
+// MockSubscriptionServiceMockRecorder is the mock recorder for MockSubscriptionService.
+type MockSubscriptionServiceMockRecorder struct {
+	mock *MockSubscriptionService
+}
+
+// NewMockSubscriptionService creates a new mock instance.
+func NewMockSubscriptionService(ctrl *gomock.Controller) *MockSubscriptionService {
+	mock := &MockSubscriptionService{ctrl: ctrl}
+	mock.recorder = &MockSubscriptionServiceMockRecorder{mock}
+	return mock
+}
+
+// EXPECT returns an object that allows the caller to indicate expected use.
+func (m *MockSubscriptionService) EXPECT() *MockSubscriptionServiceMockRecorder {
+	return m.recorder
+}
+
+// AddSubscriber mocks base method.
+func (m *MockSubscriptionService) AddSubscriber(houseId int32, email string) error {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "AddSubscriber", houseId, email)
+	ret0, _ := ret[0].(error)
+	return ret0
+}
+
+// AddSubscriber indicates an expected call of AddSubscriber.
+func (mr *MockSubscriptionServiceMockRecorder) AddSubscriber(houseId, email interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "AddSubscriber", reflect.TypeOf((*MockSubscriptionService)(nil).AddSubscriber), houseId, email)
+}
+
+// NotifySubscribers mocks base method.
+func (m *MockSubscriptionService) NotifySubscribers(houseId, flatId int32) {
+	m.ctrl.T.Helper()
+	m.ctrl.Call(m, "NotifySubscribers", houseId, flatId)
+}
+
+// NotifySubscribers indicates an expected call of NotifySubscribers.
+func (mr *MockSubscriptionServiceMockRecorder) NotifySubscribers(houseId, flatId interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "NotifySubscribers", reflect.TypeOf((*MockSubscriptionService)(nil).NotifySubscribers), houseId, flatId)
+}

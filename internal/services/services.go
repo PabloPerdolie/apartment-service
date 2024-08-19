@@ -21,5 +21,5 @@ type FlatService interface {
 
 type SubscriptionService interface {
 	AddSubscriber(houseId int32, email string) error
-	NotifySubscribers(houseId int32, flatInfo string)
+	NotifySubscribers(houseId int32, flatId int32)
 }

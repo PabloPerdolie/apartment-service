@@ -32,7 +32,7 @@ func (h *subscriptionService) AddSubscriber(houseId int32, email string) error {
 	return h.subscriptionRepo.AddSubscriber(houseId, email)
 }
 
-func (h *subscriptionService) NotifySubscribers(houseId int32, flatInfo string) {
+func (h *subscriptionService) NotifySubscribers(houseId int32, flatId int32) {
 	subscribers, err := h.subscriptionRepo.GetSubscribers(houseId)
 	if err != nil {
 		h.logger.Println("Error retrieving subscribers:", err)
@@ -41,7 +41,7 @@ func (h *subscriptionService) NotifySubscribers(houseId int32, flatInfo string) 
 
 	for _, subscriber := range subscribers {
 		go func(email string) {
-			message := fmt.Sprintf("New flat available: %s", flatInfo)
+			message := fmt.Sprintf("New flat available: %d", flatId)
 			err := h.emailSender.SendEmail(context.Background(), email, message)
 			if err != nil {
 				h.logger.Println("Failed to send email to", email, ":", err)
